@@ -3,13 +3,13 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from about.views import get_salon_address
-from .models import ClientChat, TelegramBot
 from .constants import (
     BOOKING_CREATED_TEMPLATE,
     CLIENT_CONFIRMED_TEMPLATE,
     CONFIRMED_EMAIL_TEMPLATE,
     SECONDS_IN_MINUTE,
 )
+from .models import ClientChat, TelegramBot
 
 
 def send_email_notification(booking, notification_type):

@@ -16,7 +16,6 @@ class TelegramSender:
 
     async def send_message(self, recipient, text):
         try:
-            # Используем connect() вместо start() для async with
             await self.client.connect()
 
             # Авторизация
@@ -42,23 +41,20 @@ class TelegramSender:
         await self.client.disconnect()
 
 
-# Использование
 async def main():
-    # Получаем переменные из .env как строки
     sender = TelegramSender(
         api_id=os.getenv('API_ID', ''),
         api_hash=os.getenv('API_HASH', ''),
-        phone=os.getenv('PHONE', '')  # Ваш номер
+        phone=os.getenv('PHONE', '')
     )
 
     # Отправка сообщения
     await sender.send_message(
-        recipient='+79932444875',  # или +79998887766
+        recipient='+',  # кому - формат id или +79998887766
         text='Повторка Привет! Это сообщение с моего личного аккаунта через Python!'
     )
 
     await sender.disconnect()
 
-# Запуск
 if __name__ == "__main__":
     asyncio.run(main())

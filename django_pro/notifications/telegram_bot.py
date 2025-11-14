@@ -86,11 +86,7 @@ def handle_contact(message):
     contact = message['contact']
     phone = contact.get('phone_number')
     chat_id = message['chat']['id']
-
-    # Нормализуем номер
     normalized_phone = phone if phone.startswith('+') else '+' + phone
-
-    # Сохраняем связь
     ClientChat.objects.update_or_create(
         phone=normalized_phone,
         defaults={'chat_id': chat_id}
@@ -131,8 +127,6 @@ def confirm_booking(booking_id, chat_id):
     """Подтверждение бронирования."""
     try:
         booking = Booking.objects.get(booking_id=booking_id)
-
-        # Проверяем права
         master_chat_id = str(
             booking.master.telegram_chat_id
         ) if booking.master.telegram_chat_id else None
@@ -171,8 +165,6 @@ def cancel_booking(booking_id, chat_id):
     """Отмена бронирования."""
     try:
         booking = Booking.objects.get(booking_id=booking_id)
-
-        # Проверка прав (упрощенно)
         master_chat_id = str(
             booking.master.telegram_chat_id
         ) if booking.master.telegram_chat_id else None
