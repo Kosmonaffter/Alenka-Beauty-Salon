@@ -37,7 +37,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone <repository-url>
+git clone https://github.com/Kosmonaffter/Alenka-Beauty-Salon.git
 cd django_pro
 ```
 2. Создание виртуального окружения
