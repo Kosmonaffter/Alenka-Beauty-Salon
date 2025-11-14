@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Запись на процедуру - Салон красоты{% endblock %}
+
+{% block extra_css %}
+<style>
+    .procedure-card {
+        transition: transform 0.3s;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .procedure-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    
+    <section class="hero-section">
+        {% include 'core/includes/nav_buttons.html' %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <img src="{% static 'images/Massage.ico' %}" alt="Запись на процедуру" class="img-fluid rounded-circle mb-3" width="80" style="background: white; padding: 8px;">
+                    <h1 class="display-5 fw-bold mb-3">Запись на процедуру</h1>
+                    <p class="lead mb-0">Выберите процедуру из списка ниже для записи</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container my-5">
+        <div class="row">
+            {% for procedure in procedures %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card procedure-card h-100">
+                    {% if procedure.image %}
+                    <img src="{{ procedure.image.url }}" class="card-img-top" alt="{{ procedure.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span class="text-muted">Нет изображения</span>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ procedure.title }}</h5>
+                        <p class="card-text">{{ procedure.short_description }}</p>
+                        <p class="h5 text-primary">{{ procedure.price }} руб.</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'booking:create_booking_with_service' procedure.id %}" class="btn btn-primary w-100">Выбрать эту процедуру</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>На данный момент нет доступных процедур.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
+
+{% comment %} {% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Запись на процедуру - Салон красоты{% endblock %}
+
+{% block extra_css %}
+<style>
+    .procedure-card {
+        transition: transform 0.3s;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .procedure-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Герой секция -->
+<section class="hero-section">
+    {% include 'core/includes/nav_buttons.html' %}
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <img src="{% static 'images/Massage.ico' %}" 
+                     alt="Запись на процедуру" 
+                     class="img-fluid rounded-circle mb-3" 
+                     width="80" 
+                     style="background: white; padding: 8px;">
+                <h1 class="display-5 fw-bold mb-3">Запись на процедуру</h1>
+                <p class="lead mb-0">Выберите процедуру из списка ниже для записи</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Список процедур -->
+<section class="container my-5">
+    <div class="row">
+        {% for procedure in procedures %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card procedure-card h-100">
+                {% if procedure.image %}
+                <img src="{{ procedure.image.url }}" class="card-img-top" 
+                     alt="{{ procedure.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 200px;">
+                    <span class="text-muted">Нет изображения</span>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ procedure.title }}</h5>
+                    <p class="card-text">{{ procedure.short_description }}</p>
+                    {% if procedure.description %}
+                    <p class="card-text text-muted small">{{ procedure.description|truncatewords:20 }}</p>
+                    {% endif %}
+                    <div class="mb-3">
+                        <span class="badge bg-primary">{{ procedure.category.title }}</span>
+                        <span class="badge bg-success">
+                            {{ procedure.duration }}
+                        </span>
+                    </div>
+                    <p class="h4 text-primary">{{ procedure.price }} руб.</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'booking:create_booking_with_service' procedure.id %}" 
+                    class="btn btn-primary w-100">
+                        Выбрать эту процедуру
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                На данный момент нет доступных процедур.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Навигационные карточки -->
+    
+</section>
+{% endblock %} {% endcomment %}
+

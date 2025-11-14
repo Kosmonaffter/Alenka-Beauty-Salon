@@ -1,0 +1,181 @@
+<!-- Контент для домашней страницы - информация об услугах -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Основная информация -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ content.service_title }}</h2>
+                    <p class="card-text">
+                        {{ content.service_description }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Как работает -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Как работает процедура?</h3>
+                    <p>{{ content.how_it_works }}</p>
+                    
+                    <h5>Основные механизмы действия:</h5>
+                    <ul>
+                        {% for line in content.mechanisms.splitlines %}
+                            {% if line.strip %}
+                                <li>{{ line }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    
+                    <!-- Картинки для механизмов действия -->
+                    {% for image in content.images.all %}
+                        {% if image.position == 'mechanisms' %}
+                        <div class="text-center mt-3">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="img-fluid rounded" style="max-height: 300px;">
+                            {% if image.caption %}
+                                <p class="text-muted mt-2"><em>{{ image.caption }}</em></p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Особенности -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Особенности аппаратного массажа R-sleek</h3>
+                    <p>{{ content.features }}</p>
+                    
+                    <!-- Картинки для особенностей -->
+                    {% for image in content.images.all %}
+                        {% if image.position == 'general' %}
+                        <div class="text-center mt-3">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="img-fluid rounded" style="max-height: 300px;">
+                            {% if image.caption %}
+                                <p class="text-muted mt-2"><em>{{ image.caption }}</em></p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Проблемы -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Проблемы, с которыми справится массаж R-sleek</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                {% for line in content.problems.splitlines %}
+                                    {% if forloop.counter0 < 5 and line.strip %}
+                                        <li>{{ line }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                {% for line in content.problems.splitlines %}
+                                    {% if forloop.counter0 >= 5 and line.strip %}
+                                        <li>{{ line }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Картинки для проблем -->
+                    {% for image in content.images.all %}
+                        {% if image.position == 'problems' %}
+                        <div class="text-center mt-3">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="img-fluid rounded" style="max-height: 300px;">
+                            {% if image.caption %}
+                                <p class="text-muted mt-2"><em>{{ image.caption }}</em></p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Этапы процедуры -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Этапы процедуры:</h3>
+                    <div class="row">
+                        {% for line in content.stages.splitlines %}
+                            {% if line.strip %}
+                            <div class="col-md-3 text-center mb-3">
+                                <h5>{{ line|slice:":1" }}</h5>
+                                <p class="small">{{ line|slice:"2:" }}</p>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Картинки для этапов -->
+                    {% for image in content.images.all %}
+                        {% if image.position == 'stages' %}
+                        <div class="text-center mt-3">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="img-fluid rounded" style="max-height: 300px;">
+                            {% if image.caption %}
+                                <p class="text-muted mt-2"><em>{{ image.caption }}</em></p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Преимущества -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Преимущества массажа R-sleek</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                {% for line in content.advantages.splitlines %}
+                                    {% if forloop.counter0 < 2 and line.strip %}
+                                        <li>{{ line }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                {% for line in content.advantages.splitlines %}
+                                    {% if forloop.counter0 >= 2 and line.strip %}
+                                        <li>{{ line }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Картинки для преимуществ -->
+                    {% for image in content.images.all %}
+                        {% if image.position == 'advantages' %}
+                        <div class="text-center mt-3">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="img-fluid rounded" style="max-height: 300px;">
+                            {% if image.caption %}
+                                <p class="text-muted mt-2"><em>{{ image.caption }}</em></p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Цены -->
+            <div class="card shadow-sm bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Прайс-лист на массаж R-sleek</h3>
+                    <p class="h4">от {{ content.price }} рублей за сеанс</p>
+                    <p class="mb-0">{{ content.price_description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

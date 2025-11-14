@@ -1,0 +1,34 @@
+<!-- Контент для домашней страницы - услуги -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 Каталог услуг</h5>
+                        <p class="card-text">Ознакомьтесь с нашим широким спектром услуг и процедур</p>
+                        <a href="{% url 'catalog:product_list' %}" class="btn btn-primary">Перейти в каталог</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">🏢 О компании</h5>
+                        <p class="card-text">Узнайте больше о нашей компании и команде профессионалов</p>
+                        <a href="{% url 'about:info' %}" class="btn btn-outline-primary">О нас</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">📅 Запись онлайн</h5>
+                        <p class="card-text">Запишитесь на процедуру в удобное для вас время</p>
+                        <a href="/booking/" class="btn btn-success">Записаться</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
