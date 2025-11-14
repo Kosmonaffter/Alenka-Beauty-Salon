@@ -96,12 +96,13 @@ python manage.py setup_telegram_webhook --domain your-domain.com --https
 
 📧 Настройка Email
 Для Yandex почты:
-python
+``` python
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your-email@yandex.ru'
 EMAIL_HOST_PASSWORD = 'пароль-приложения'
+```
 🗃 Модели данных
 Основные модели:
 Procedure - процедуры/услуги
