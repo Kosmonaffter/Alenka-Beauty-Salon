@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, time as time_type
-
+from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView
 
+from about.utils import get_legal_address
 from catalog.models import Procedure
 from masters.models import Master
 from notifications.telegram_utils import send_booking_notification
@@ -38,17 +39,12 @@ from .forms import BookingForm, PhoneNumberForm
 from .models import Booking, WorkingHoursSettings
 
 
-class ServiceListView(TemplateView):
-    """Отображение списка доступных процедур."""
+class ServiceListView(View):
+    """Редирект на форму бронирования с выбором процедуры."""
 
-    template_name = 'booking/services.html'
-
-    def get_context_data(self, **kwargs):
-        """Добавление списка процедур в контекст."""
-        context = super().get_context_data(**kwargs)
-        procedures = Procedure.objects.filter(is_available=True)
-        context[CONTEXT_PROCEDURES] = procedures
-        return context
+    def get(self, request):
+        """Перенаправляем на форму бронирования."""
+        return redirect('booking:create_booking')
 
 
 class BookingCreateView(View):
@@ -139,6 +135,8 @@ class PhoneConfirmationView(View):
         context = {
             CONTEXT_FORM: form,
             'existing_client': bool(existing_client),
+            'salon_address': get_legal_address(),
+            'DEFAULT_FROM_EMAIL': settings.DEFAULT_FROM_EMAIL,
         }
         return render(request, 'booking/phone_confirmation.html', context)
 
@@ -179,7 +177,6 @@ class PhoneConfirmationView(View):
         client_name = form.cleaned_data.get('client_name', '')
 
         try:
-            # Создаем нового клиента
             client = Client.objects.create(
                 phone=phone,
                 name=client_name,
@@ -233,7 +230,7 @@ class PhoneConfirmationView(View):
             master_id=pending_booking['master_id'],
             booking_date=pending_booking['booking_date'],
             booking_time=pending_booking['booking_time'],
-            client_name=client.name,  # Используем имя из профиля клиента
+            client_name=client.name,
             client_phone=client.phone,
             client_email=client.email,
             notification_method=client.notification_method,

@@ -60,7 +60,6 @@ class PhoneNumberForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.existing_client = kwargs.pop('existing_client', False)
         super().__init__(*args, **kwargs)
-        # Для существующих клиентов имя не требуется
         if self.existing_client:
             self.fields['client_name'].required = False
         else:
@@ -79,7 +78,7 @@ class PhoneNumberForm(forms.Form):
                    data-bs-target="#agreementModal">
                     обработку персональных данных
                 </a>
-                и получение уведомлений о записи через Telegram бота,
+                и получение уведомлений о записи через Telegram,
                 либо Email в зависимости от моего выбора.
             </div>
         """)
@@ -115,7 +114,7 @@ class BookingForm(forms.ModelForm):
             'master',
             'booking_date',
             'booking_time',
-            'client_phone'  # Добавляем поле телефона
+            'client_phone',
         ]
         widgets = {
             'procedure': forms.Select(attrs={

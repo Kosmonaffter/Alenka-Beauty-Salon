@@ -6,11 +6,31 @@ from .models import Address
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    """Админка для бронирований."""
+    """Админка для адресов."""
 
-    list_display = ['address', 'has_map_display']
-    fields = ['address', 'map_embed_code', 'map_preview']
+    list_display = [
+        'address',
+        'is_legal_address',
+        'is_display_address',
+        'has_map_display',
+    ]
+    list_editable = ['is_legal_address', 'is_display_address']
+    fields = [
+        'address',
+        'is_legal_address',
+        'is_display_address',
+        'map_embed_code',
+        'map_preview',
+    ]
     readonly_fields = ['map_preview']
+
+    @admin.display(description='Юр. адрес', boolean=True)
+    def is_legal_address_display(self, obj):
+        return obj.is_legal_address
+
+    @admin.display(description='Для отображения', boolean=True)
+    def is_display_address_display(self, obj):
+        return obj.is_display_address
 
     @admin.display(description='Есть карта')
     def has_map_display(self, obj):

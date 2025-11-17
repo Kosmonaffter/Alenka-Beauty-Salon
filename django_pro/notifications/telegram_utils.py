@@ -6,10 +6,12 @@ from about.views import get_salon_address
 from .constants import (
     BOOKING_CREATED_TEMPLATE,
     CLIENT_CONFIRMED_TEMPLATE,
+    CLIENT_CANCELLED_TEMPLATE,
     CONFIRMED_EMAIL_TEMPLATE,
     SECONDS_IN_MINUTE,
 )
 from .models import ClientChat, TelegramBot
+from .personal_sender import send_personal_telegram_message
 
 
 def send_email_notification(booking, notification_type):
@@ -32,7 +34,7 @@ def send_email_notification(booking, notification_type):
             master_phone=booking.master.phone or 'не указан',
             booking_date=booking.booking_date,
             booking_time=booking.booking_time.strftime('%H:%M'),
-            address=get_salon_address()
+            address=get_salon_address(),
         )
         send_mail(
             subject='✅ Подтверждение записи в салоне красоты',
@@ -46,6 +48,7 @@ def send_email_notification(booking, notification_type):
     except Exception as e:
         print(f'DEBUG: Ошибка отправки email: {str(e)}')
         import traceback
+
         print(f'DEBUG: Полная трассировка: {traceback.format_exc()}')
         return False
 
@@ -57,11 +60,7 @@ def send_telegram_message(chat_id, message, reply_markup=None):
         return False
 
     url = f'https://api.telegram.org/bot{bot.token}/sendMessage'
-    payload = {
-        'chat_id': chat_id,
-        'text': message,
-        'parse_mode': 'HTML'
-    }
+    payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
 
     if reply_markup:
         payload['reply_markup'] = reply_markup
@@ -76,24 +75,34 @@ def send_telegram_message(chat_id, message, reply_markup=None):
 def create_inline_keyboard(booking_id):
     """Создает клавиатуру для подтверждения/отмены."""
     return {
-        'inline_keyboard': [[
-            {
-                'text': '✅ Подтвердить',
-                'callback_data': f'confirm_{booking_id}',
-            },
-            {'text': '❌ Отменить', 'callback_data': f'cancel_{booking_id}'}
-        ]]
+        'inline_keyboard': [
+            [
+                {
+                    'text': '✅ Подтвердить',
+                    'callback_data': f'confirm_{booking_id}',
+                },
+                {
+                    'text': '❌ Отменить',
+                    'callback_data': f'cancel_{booking_id}',
+                },
+            ]
+        ]
     }
 
 
 def create_contact_keyboard():
     """Создает клавиатуру для отправки номера."""
     return {
-        'keyboard': [[
-            {'text': '📱 Отправить номер', 'request_contact': True}
-        ]],
+        'keyboard': [
+            [
+                {
+                    'text': '📱 Отправить номер',
+                    'request_contact': True,
+                }
+            ]
+        ],
         'resize_keyboard': True,
-        'one_time_keyboard': True
+        'one_time_keyboard': True,
     }
 
 
@@ -140,9 +149,7 @@ def send_booking_notification(booking):
 
     keyboard = create_inline_keyboard(booking.booking_id)
     chat_id = booking.master.telegram_chat_id or getattr(
-        settings,
-        'TELEGRAM_ADMIN_CHAT_ID',
-        ''
+        settings, 'TELEGRAM_ADMIN_CHAT_ID', ''
     )
 
     if chat_id:
@@ -153,7 +160,7 @@ def send_booking_notification(booking):
 def send_client_notification(booking, notification_type):
     """Отправляет уведомление клиенту выбранным способом."""
     if booking.notification_method == 'telegram':
-        print('🔔 DEBUG: Выбран Telegram')
+        print(f'🔔 DEBUG: Отправка Telegram на {booking.client_phone}')
         return send_telegram_notification(booking, notification_type)
     elif booking.notification_method == 'email':
         print('🔔 DEBUG: Выбран Email')
@@ -164,27 +171,30 @@ def send_client_notification(booking, notification_type):
 
 
 def send_telegram_notification(booking, notification_type):
-    """Отправляет уведомление в Telegram."""
-    templates = {'confirmed': CLIENT_CONFIRMED_TEMPLATE}
+    """Отправляет уведомление в Telegram через личный аккаунт."""
+    templates = {
+        'confirmed': CLIENT_CONFIRMED_TEMPLATE,
+        'cancelled': CLIENT_CANCELLED_TEMPLATE,
+    }
 
     if notification_type not in templates:
+        print(f'❌ Неизвестный тип уведомления: {notification_type}')
         return False
 
     message = templates[notification_type].format(
         client_name=booking.client_name,
         procedure_title=booking.procedure.title,
         master_name=booking.master.name,
-        master_phone=booking.master.phone,
+        master_phone=booking.master.phone or 'не указан',
         booking_date=booking.booking_date,
         booking_time=booking.booking_time.strftime('%H:%M'),
         address=get_salon_address(),
     )
 
-    chat_id = find_chat_id_by_phone(booking.client_phone)
-    if chat_id:
-        return send_telegram_message(chat_id, message)
+    print(f'🔔 Отправка Telegram на {booking.client_phone}: {notification_type}')
 
-    return False
+    # Отправляем через личный аккаунт на номер клиента
+    return send_personal_telegram_message(booking.client_phone, message)
 
 
 def answer_callback_query(callback_query_id, text):

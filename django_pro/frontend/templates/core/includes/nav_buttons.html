@@ -13,7 +13,7 @@
                         📋 Каталог
                     </a>
                     <a href="/booking/" class="btn btn-outline-light btn-sm"
-                    {% if request.resolver_match.url_name == 'service_list' %}style="display:none"{% endif %}>
+                    {% if request.resolver_match.url_name == 'create_booking' or request.resolver_match.url_name == 'create_booking_with_service' %}style="display:none"{% endif %}>
                         📅 Запись
                     </a>
                     <a href="{% url 'masters:index' %}" class="btn btn-outline-light btn-sm"

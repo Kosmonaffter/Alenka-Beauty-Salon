@@ -4,23 +4,7 @@
 {% block title %}Подтверждение записи{% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    {% include 'core/includes/nav_buttons.html' %}
-    
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <img src="{% static 'images/Massage.ico' %}"
-                     alt="Подтверждение записи"
-                     class="img-fluid rounded-circle mb-3"
-                     width="80"
-                     style="background: white; padding: 8px;">
-                <h1 class="display-5 fw-bold mb-3">Подтверждение записи</h1>
-                <p class="lead mb-0">Завершите оформление записи</p>
-            </div>
-        </div>
-    </div>
-</section>
+{% include 'core/includes/hero_section.html' with title='Подтверждение записи' alt_text='Подтверждение' description='Завершите оформление записи' %}
 
 <section class="container my-5">
     <div class="row justify-content-center">
@@ -91,13 +75,9 @@
                             {% endif %}
                             <div class="form-text">На этот адрес придет подтверждение записи</div>
                         </div>
-
                         <div class="telegram-info alert alert-info" id="telegram-info" style="display: none;">
-                            <strong>📱 Для получения уведомлений в Telegram:</strong><br>
-                            1. Перейдите в <a href="https://t.me/HiSaloonBot" target="_blank">@HiSaloonBot</a><br>
-                            2. Нажмите "START" или отправьте <code>/start</code><br>
-                            3. Нажмите "📱 Отправить номер телефона"<br>
-                            4. Выберите ваш номер из контактов
+                            <strong>📱 Уведомления в Telegram</strong><br>
+                            Вы будете получать уведомления о статусе записи в Telegram
                         </div>
 
                         <div class="mb-3">
@@ -129,22 +109,7 @@
     </div>
 </section>
 
-<div class="modal fade" id="agreementModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Согласие на обработку данных</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Нажимая кнопку "Отправить заявку", вы даете согласие на обработку ваших персональных данных.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Понятно</button>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'core/includes/content_consent_booking.html' with salon_address=salon_address DEFAULT_FROM_EMAIL=DEFAULT_FROM_EMAIL %}
 {% endblock %}
 
 {% block extra_js %}
