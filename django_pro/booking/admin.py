@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Booking, WorkingHoursSettings
+from .models import Booking, WorkingHoursSettings, ReminderSettings
 
 
 @admin.register(Booking)
@@ -80,5 +80,18 @@ class WorkingHoursSettingsAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         """Ограничиваем создание только одной настройки."""
         if WorkingHoursSettings.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+
+@admin.register(ReminderSettings)
+class ReminderSettingsAdmin(admin.ModelAdmin):
+    """Админка для настроек напоминаний."""
+    list_display = ['reminder_hours', 'is_active']
+    list_editable = ['is_active']
+
+    def has_add_permission(self, request):
+        """Ограничиваем создание только одной настройки."""
+        if ReminderSettings.objects.exists():
             return False
         return super().has_add_permission(request)

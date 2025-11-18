@@ -45,6 +45,14 @@ class Master(models.Model):
         blank=True
     )
     age = models.IntegerField(verbose_name='Возраст', blank=True)
+    is_contact_phone = models.BooleanField(
+        default=False,
+        verbose_name='Телефон для справок',
+        help_text=(
+            'Использовать этот телефон для уведомлений клиентов '
+            '(работает даже если мастер не активен)'
+        ),
+    )
 
     class Meta:
         verbose_name = 'Мастер'

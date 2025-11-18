@@ -145,6 +145,19 @@ class Booking(models.Model):
         blank=True,
         verbose_name='Телефон для оплаты',
     )
+    reminder_sent = models.BooleanField(
+        default=False,
+        verbose_name='Напоминание отправлено',
+    )
+    reminder_sent_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name='Когда отправлено напоминание',
+    )
+    needs_confirmation = models.BooleanField(
+        default=True,
+        verbose_name='Требует подтверждения',
+    )
 
     class Meta:
         verbose_name = 'Бронирование'
@@ -217,6 +230,40 @@ class WorkingHoursSettings(models.Model):
         """Сохраняем только одну активную настройку."""
         if self.is_active:
             WorkingHoursSettings.objects.exclude(pk=self.pk).update(
+                is_active=False
+            )
+        super().save(*args, **kwargs)
+
+
+class ReminderSettings(models.Model):
+    """Настройки напоминаний о записи"""
+
+    reminder_hours = models.PositiveIntegerField(
+        default=24,
+        verbose_name='За сколько часов напоминать',
+        help_text=(
+            'За сколько часов до записи отправлять '
+            'напоминание с подтверждением'
+        ),
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активные настройки',
+    )
+
+    class Meta:
+        verbose_name = 'Настройка напоминаний'
+        verbose_name_plural = 'Настройки напоминаний'
+
+    def __str__(self):
+        return f'Напоминание за {self.reminder_hours} часов'
+
+    def save(self, *args, **kwargs):
+        """Сохраняем только одну активную настройку."""
+        if self.is_active:
+            ReminderSettings.objects.exclude(
+                pk=self.pk
+            ).update(
                 is_active=False
             )
         super().save(*args, **kwargs)

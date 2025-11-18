@@ -15,6 +15,10 @@ from .constants import (
     BOOKING_NOT_FOUND_MESSAGE,
 )
 from .models import ClientChat
+from .reminder_utils import (
+    process_reminder_confirmation,
+    process_reminder_cancellation
+)
 from .telegram_utils import (
     answer_callback_query,
     create_contact_keyboard,
@@ -108,7 +112,19 @@ def handle_callback_query(data):
     callback_data = data.get('data', '')
     chat_id = data.get('from', {}).get('id')
 
-    if callback_data.startswith('confirm_'):
+    if callback_data.startswith('reminder_confirm_'):
+        booking_id = callback_data.replace('reminder_confirm_', '').strip()
+        result = process_reminder_confirmation(booking_id)
+        answer_callback_query(data['id'], "Запись подтверждена ✅")
+        return JsonResponse({'status': 'reminder_confirmed'})
+
+    elif callback_data.startswith('reminder_cancel_'):
+        booking_id = callback_data.replace('reminder_cancel_', '').strip()
+        result = process_reminder_cancellation(booking_id)
+        answer_callback_query(data['id'], "Запись отменена ❌")
+        return JsonResponse({'status': 'reminder_cancelled'})
+
+    elif callback_data.startswith('confirm_'):
         booking_id = callback_data.replace('confirm_', '').strip()
         result = confirm_booking(booking_id, chat_id)
         answer_callback_query(data['id'], "Запись подтверждена ✅")

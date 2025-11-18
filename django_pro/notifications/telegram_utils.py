@@ -2,12 +2,19 @@ import requests
 from django.conf import settings
 from django.core.mail import send_mail
 
+from about.utils import get_contact_phone
 from about.views import get_salon_address
 from .constants import (
     BOOKING_CREATED_TEMPLATE,
+    CANCEL_BUTTON_TEXT,
+    CANCELLATION_TELEGRAM_TEMPLATE,
     CLIENT_CONFIRMED_TEMPLATE,
     CLIENT_CANCELLED_TEMPLATE,
+    CONFIRM_BUTTON_TEXT,
     CONFIRMED_EMAIL_TEMPLATE,
+    CONFIRMATION_TELEGRAM_TEMPLATE,
+    REMINDER_EMAIL_TEMPLATE,
+    REMINDER_TELEGRAM_TEMPLATE,
     SECONDS_IN_MINUTE,
 )
 from .models import ClientChat, TelegramBot
@@ -31,7 +38,7 @@ def send_email_notification(booking, notification_type):
             client_name=booking.client_name,
             procedure_title=booking.procedure.title,
             master_name=booking.master.name,
-            master_phone=booking.master.phone or 'не указан',
+            master_phone=get_contact_phone(),
             booking_date=booking.booking_date,
             booking_time=booking.booking_time.strftime('%H:%M'),
             address=get_salon_address(),
@@ -129,7 +136,6 @@ def send_booking_notification(booking):
         new_client_text = '🆕 <b>НОВЫЙ КЛИЕНТ - ТРЕБУЕТСЯ ПРЕДОПЛАТА</b>'
         payment_info = (
             f'''💳 <b>Требуется предоплата:</b> {booking.procedure.price} руб.
-        📱 <b>Телефон для перевода:</b> <code>{booking.payment_phone}</code>
             '''
         )
 
@@ -185,7 +191,7 @@ def send_telegram_notification(booking, notification_type):
         client_name=booking.client_name,
         procedure_title=booking.procedure.title,
         master_name=booking.master.name,
-        master_phone=booking.master.phone or 'не указан',
+        master_phone=get_contact_phone(),
         booking_date=booking.booking_date,
         booking_time=booking.booking_time.strftime('%H:%M'),
         address=get_salon_address(),
@@ -193,7 +199,6 @@ def send_telegram_notification(booking, notification_type):
 
     print(f'🔔 Отправка Telegram на {booking.client_phone}: {notification_type}')
 
-    # Отправляем через личный аккаунт на номер клиента
     return send_personal_telegram_message(booking.client_phone, message)
 
 
@@ -211,3 +216,114 @@ def answer_callback_query(callback_query_id, text):
         return response.status_code == 200
     except Exception:
         return False
+
+
+def create_reminder_keyboard(booking_id):
+    """Создает клавиатуру для подтверждения/отмены напоминания."""
+    return {
+        'inline_keyboard': [
+            [
+                {
+                    'text': CONFIRM_BUTTON_TEXT,
+                    'callback_data': f'reminder_confirm_{booking_id}',
+                },
+                {
+                    'text': CANCEL_BUTTON_TEXT,
+                    'callback_data': f'reminder_cancel_{booking_id}',
+                },
+            ]
+        ]
+    }
+
+
+def send_reminder_notification(booking):
+    """Отправляет напоминание клиенту."""
+    if booking.notification_method == 'telegram':
+        return send_telegram_reminder(booking)
+    elif booking.notification_method == 'email':
+        return send_email_reminder(booking)
+    return False
+
+
+def send_telegram_reminder(booking):
+    """Отправляет напоминание в Telegram."""
+    message = REMINDER_TELEGRAM_TEMPLATE.format(
+        client_name=booking.client_name,
+        procedure_title=booking.procedure.title,
+        master_name=booking.master.name,
+        booking_date=booking.booking_date,
+        booking_time=booking.booking_time.strftime('%H:%M'),
+        address=get_salon_address(),
+        master_phone=get_contact_phone()
+    )
+
+    keyboard = create_reminder_keyboard(booking.booking_id)
+    client_chat = ClientChat.objects.filter(phone=booking.client_phone).first()
+
+    if client_chat:
+        return send_telegram_message(
+            client_chat.chat_id,
+            message,
+            reply_markup=keyboard
+        )
+    return False
+
+
+def send_email_reminder(booking):
+    """Отправляет напоминание по email."""
+    if not booking.client_email:
+        return False
+
+    message = REMINDER_EMAIL_TEMPLATE.format(
+        client_name=booking.client_name,
+        procedure_title=booking.procedure.title,
+        master_name=booking.master.name,
+        booking_date=booking.booking_date,
+        booking_time=booking.booking_time.strftime('%H:%M'),
+        address=get_salon_address(),
+        master_phone=get_contact_phone()
+    )
+
+    try:
+        send_mail(
+            subject='🔔 Напоминание о записи',
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[booking.client_email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f'DEBUG: Ошибка отправки email напоминания: {str(e)}')
+        return False
+
+
+def send_confirmation_notification(booking):
+    """Отправляет подтверждение клиенту."""
+    if booking.notification_method == 'telegram':
+        message = CONFIRMATION_TELEGRAM_TEMPLATE.format(
+            booking_date=booking.booking_date,
+            booking_time=booking.booking_time.strftime('%H:%M'),
+            address=get_salon_address(),
+            master_phone=get_contact_phone()
+        )
+
+        client_chat = ClientChat.objects.filter(
+            phone=booking.client_phone
+        ).first()
+        if client_chat:
+            send_telegram_message(client_chat.chat_id, message)
+
+
+def send_cancellation_notification(booking):
+    """Отправляет уведомление об отмене."""
+    if booking.notification_method == 'telegram':
+        message = CANCELLATION_TELEGRAM_TEMPLATE.format(
+            master_phone=get_contact_phone()
+        )
+
+        client_chat = ClientChat.objects.filter(
+            phone=booking.client_phone
+        ).first()
+        if client_chat:
+            send_telegram_message(client_chat.chat_id, message)
