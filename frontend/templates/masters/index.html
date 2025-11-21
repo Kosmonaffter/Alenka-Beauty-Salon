@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Мастера{% endblock %}
+
+{% block content %}
+
+    {% include 'core/includes/hero_section.html' with title='Наши мастера' alt_text='Мастера' description='Профессиональные специалисты салона красоты АлЁнкА' %}
+
+    <!-- Контент с мастерами -->
+    <section class="container mb-5">
+        <div class="row g-4">
+            {% for master in masters %}
+            <div class="col-md-4">
+                <div class="card feature-card h-100 text-center">
+                    {% if master.photo %}
+                    <img src="{{ master.photo.url }}" class="card-img-top" alt="{{ master.name }}">
+                    {% else %}
+                    <img src="/static/images/default_master.png" class="card-img-top" alt="Фото мастера">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ master.name }}</h5>
+                        <h5 class="card-title">
+                            <strong>Возраст:</strong> {{ master.age }}</h5>
+                        <p class="card-text">{{ master.specialization }}</p>
+                        <p class="card-text">{{ master.description|linebreaksbr }}</p>
+                        <p class="card-text">
+                            <strong>Телефон:</strong> {{ master.phone }}<br>
+                            {% if master.telegram_username %}
+                            <strong>Telegram:</strong> @{{ master.telegram_username }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>Мастера не найдены.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

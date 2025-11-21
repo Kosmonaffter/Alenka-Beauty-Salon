@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Заявка отправлена - Салон красоты{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    {% include 'core/includes/nav_buttons.html' %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <img src="{% static 'images/Massage.ico' %}"
+                     alt="Заявка отправлена"
+                     class="img-fluid rounded-circle mb-3"
+                     width="80"
+                     style="background: white; padding: 8px;">
+                <h1 class="display-5 fw-bold mb-3">Заявка отправлена!</h1>
+                <p class="lead mb-0">Ваша заявка успешно отправлена</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title mb-0">✅ Заявка отправлена!</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="display-1 text-success">🎉</div>
+                        <h3 class="text-success">Ваша заявка успешно отправлена!</h3>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Детали заявки</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Клиент:</strong> {{ booking.client_name }}</p>
+                                    <p><strong>Телефон:</strong> {{ booking.client_phone }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Процедура:</strong> {{ booking.procedure.title }}</p>
+                                    <p><strong>Мастер:</strong> {{ booking.master.name }}</p>
+                                    <p><strong>Дата и время:</strong> {{ booking.booking_date }} в {{ booking.booking_time }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h5>Что дальше?</h5>
+                        <ul class="mb-0">
+                            <li>Ожидайте подтверждения бронирования в Telegram</li>
+                            <li>Мастер свяжется с вами для уточнения деталей</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'booking:service_list' %}" class="btn btn-primary">
+                            Записаться на другую услугу
+                        </a>
+                        <a href="{% url 'homepage:index' %}" class="btn btn-outline-primary">
+                            На главную
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}О компании{% endblock %}
+
+{% block content %}
+    {% include 'core/includes/hero_section.html' with title='О компании' alt_text='О компании' %}
+    
+    {% include 'core/includes/content_info.html' %}
+    
+    {% block info_content %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="card-title">🏢 Наш салон:</h3>
+            <ul class="list-unstyled">
+                <li>📍 Адрес: {{ salon_address }}</li>
+            </ul>
+            
+            {% if salon_map %}
+                <div class="mt-4">
+                    <h5>🗺️ Мы на карте:</h5>
+                    <div class="map-container" style="height: 300px; border-radius: 8px; overflow: hidden;">
+                        {{ salon_map|safe }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="card-title">📞 Поддержка (Автор Сайта):</h3>
+            <ul class="list-unstyled">
+                <li>Telegram: @kosmonafftsb</li>
+                <li>Email: kosmonaffter@yandex.ru</li>
+                <li>Год: 2025</li>
+            </ul>
+        </div>
+    </div>
+    {% endblock %}
+{% endblock %}
