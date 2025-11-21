@@ -10,15 +10,23 @@ from .constants import (
 class TelegramBot(models.Model):
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        verbose_name='Название бота'
+        verbose_name='Название бота',
+        default='Основной бот'
     )
     token = models.CharField(
         max_length=TOKEN_MAX_LENGTH,
-        verbose_name='Токен бота'
+        verbose_name='Токен бота',
+        blank=True
+    )
+    admin_chat_id = models.CharField(
+        max_length=CHAT_ID_MAX_LENGTH,
+        verbose_name='Chat ID администратора',
+        blank=True,
+        help_text='ID чата для уведомлений администратора',
     )
     is_active = models.BooleanField(
         default=True,
-        verbose_name='Активный бот'
+        verbose_name='Активный бот',
     )
 
     class Meta:
@@ -33,15 +41,15 @@ class ClientChat(models.Model):
     phone = models.CharField(
         max_length=PHONE_MAX_LENGTH,
         unique=True,
-        verbose_name='Номер'
+        verbose_name='Номер',
     )
     chat_id = models.CharField(
         max_length=CHAT_ID_MAX_LENGTH,
-        verbose_name='Chat ID'
+        verbose_name='Chat ID',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Создано'
+        verbose_name='Создано',
     )
 
     class Meta:
