@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Каталог услуг{% endblock %}
+
+{% block content %}
+    {% include 'core/includes/hero_section.html' with title='Каталог услуг' alt_text='Каталог' %}
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                {% if procedures %}
+                    <div class="row g-4">
+                        {% for procedure in procedures %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card feature-card h-100">
+                                    <div class="card-body">
+                                        <span class="badge bg-secondary mb-2">
+                                            {{ procedure.category }}
+                                        </span>
+                                        <h5 class="card-title">{{ procedure.title }}</h5>
+                                        <p class="card-text">
+                                            {{ procedure.short_description }}
+                                            {% if procedure.short_description|length >= 30 %}...{% endif %}
+                                        </p>
+                                        <p class="h5 text-primary">{{ procedure.price }} ₽</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{% url 'catalog:product_detail' procedure.pk %}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            Подробнее
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <p class="lead">Процедуры пока не добавлены</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

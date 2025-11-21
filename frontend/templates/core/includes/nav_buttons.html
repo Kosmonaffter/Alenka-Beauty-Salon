@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-start align-items-start p-3">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'homepage:index' %}" class="btn btn-outline-light btn-sm"
+                    {% if request.resolver_match.url_name == 'index' and request.resolver_match.app_name == 'homepage' %}style="display:none"{% endif %}>
+                        🏠 Домой
+                    </a>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-light btn-sm"
+                    {% if request.resolver_match.url_name == 'product_list' %}style="display:none"{% endif %}>
+                        📋 Каталог
+                    </a>
+                    <a href="/booking/" class="btn btn-outline-light btn-sm"
+                    {% if request.resolver_match.url_name == 'create_booking' or request.resolver_match.url_name == 'create_booking_with_service' %}style="display:none"{% endif %}>
+                        📅 Запись
+                    </a>
+                    <a href="{% url 'masters:index' %}" class="btn btn-outline-light btn-sm"
+                    {% if request.resolver_match.url_name == 'index' and request.resolver_match.app_name == 'masters' %}style="display:none"{% endif %}>
+                        🦹‍♀️ Мастера
+                    </a>
+                    <a href="{% url 'about:info' %}" class="btn btn-outline-light btn-sm"
+                    {% if request.resolver_match.url_name == 'info' %}style="display:none"{% endif %}>
+                        ℹ️ О нас
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

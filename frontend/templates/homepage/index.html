@@ -1,0 +1,9 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Главная страница - Кабинет аппаратного массажа АлЁнкА - профессиональные услуги массажа и спа-процедур{% endblock %}
+
+{% block content %}
+    {% include 'core/includes/hero_section.html' with title='Добро пожаловать!' alt_text='Massage Salon' %}
+    
+    {% include 'core/includes/content_home.html' %}
+{% endblock %}
