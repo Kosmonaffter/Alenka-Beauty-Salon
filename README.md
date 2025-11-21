@@ -1,12 +1,14 @@
 # 🏪 Салон красоты "АлЁнкА" - Система бронирования
+
 ![Главная страница](frontend/static/images/Home.png)
+
 Система онлайн-записи на процедуры с автоматическими уведомлениями.
 
 ## 🚀 Основные возможности
 
 ### 📅 Бронирование процедур
 - Выбор процедуры из каталога
-- Выбор мастера
+- Выбор мастера  
 - Выбор даты и времени
 - Проверка доступности времени
 
@@ -21,25 +23,32 @@
 ### 💰 Система оплаты
 - Автоматическое определение необходимости предоплаты
 - Уведомления о предоплате для новых клиентов
+- Отслеживание статуса оплаты
 
 ### 👥 Управление клиентами
 - Автоматическое создание карточек клиентов
 - Сохранение истории записей
 - Интеграция с Telegram для уведомлений
 
+### 🔔 Система напоминаний
+- Автоматические напоминания о записях
+- Подтверждение/отмена через Telegram кнопки
+- Настраиваемое время напоминаний
+
 ## 🛠 Технологии
 - **Backend**: Django 3.2, Python 3.9
 - **Frontend**: Bootstrap 5, JavaScript
 - **База данных**: SQLite (разработка) / PostgreSQL (продакшн)
 - **Уведомления**: Telegram Bot API, SMTP
-- **Деплой**: Nginx, Gunicorn, Docker, CI/CD
+- **Контейнеризация**: Docker, Docker Compose
+- **Веб-сервер**: Nginx, Gunicorn
 
 ## 📋 Установка и запуск
 
 ### 1. Клонирование репозитория
 ```bash
 git clone https://github.com/Kosmonaffter/Alenka-Beauty-Salon.git
-cd django_pro
+cd Alenka-Beauty-Salon/backend
 ```
 2. Создание виртуального окружения
 ```bash
@@ -53,18 +62,35 @@ pip install -r requirements.txt
 ```
 4. Настройка окружения
 Создайте файл .env в корне проекта:
-```env
+```bash
+# Обязательные настройки
 DEBUG=True
-SECRET_KEY=your-secret-key
-TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+SECRET_KEY=your-secret-key-here
+TELEGRAM_BOT_TOKEN=your-bot-token
 TELEGRAM_ADMIN_CHAT_ID=your-chat-id
-DOMAIN_NAME=your-domain.com
-ALLOWED_HOSTS=localhost,127.0.0.1,.your-domain.com
+
+# База данных (для Docker)
+POSTGRES_DB=django_pro
+POSTGRES_USER=django_user
+POSTGRES_PASSWORD=django_password
+
+# Email уведомления
+EMAIL_HOST=smtp.yandex.ru
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@yandex.ru
+EMAIL_HOST_PASSWORD=app-password
+DEFAULT_FROM_EMAIL=your-email@yandex.ru
+
+# Домен
+DOMAIN_NAME=localhost
+ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 5. Миграции и суперпользователь
 ```bash
 python manage.py migrate
+python manage.py collectstatic
 python manage.py createsuperuser
+python manage.py runserver
 ```
 6. Инициализация данных
 ```bash
@@ -75,6 +101,43 @@ python manage.py init_payment_settings
 ```bash
 python manage.py runserver
 ```
+
+## 🐳 Быстрый запуск через Docker
+
+```bash
+# Клонирование и запуск
+git clone https://github.com/Kosmonaffter/Alenka-Beauty-Salon.git
+cd Alenka-Beauty-Salon
+
+# Запуск всех сервисов
+docker-compose up -d
+
+# Создание администратора
+docker-compose exec backend python manage.py createsuperuser
+
+# Открыть в браузере
+http://localhost
+```
+
+⚙️ Команды управления
+Телеграм бот:
+```bash
+# Диагностика бота
+docker-compose exec backend python manage.py diagnose_bot
+
+# Тест уведомлений  
+docker-compose exec backend python manage.py test_notification
+
+# Установка вебхука
+docker-compose exec backend python manage.py setup_webhook
+```
+
+Напоминания:
+```bash
+# Отправка напоминаний
+docker-compose exec backend python manage.py send_reminders
+```
+
 🤖 Настройка Telegram бота
 1. Создание бота
 Найти @BotFather в Telegram
@@ -87,6 +150,7 @@ python manage.py runserver
 ```bash
 python manage.py setup_telegram_webhook --domain your-domain.com --https
 ```
+
 3. Активация клиентами
 Клиенты должны:
 
@@ -222,26 +286,17 @@ django_pro/
 Назначить мастеров
 Активировать процедуру
 
-### 2. **Docker запуск**:
-
-## 🐳 Запуск через Docker (рекомендуется)
-
-### Быстрый старт:
-```bash
-# Клонирование и запуск
-git clone https://github.com/Kosmonaffter/Alenka-Beauty-Salon.git
-cd Alenka-Beauty-Salon
-
-# Запуск всех сервисов
-docker-compose up -d
-
-# Создание администратора
-docker-compose exec backend python manage.py createsuperuser
-
-# Открыть в браузере
-http://localhost
-
+### Еще не допилено:
 ## 🔔 Система напоминаний
+# Автоматические напоминания:
+- 📅 Напоминание о записи за 24 часа
+# Запуск напоминаний:
+```bash
+# Ручной запуск
+docker-compose exec backend python manage.py send_reminders
+
+# Автоматизация (cron)
+0 * * * * cd /path/to/project && docker-compose exec backend python manage.py send_reminders
 ```
 
 📞 Поддержка
