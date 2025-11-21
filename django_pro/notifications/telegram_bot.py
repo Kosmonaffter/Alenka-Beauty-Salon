@@ -1,10 +1,11 @@
+import uuid
+import json
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-import uuid
-import json
+from http import HTTPStatus
 
 from booking.models import Booking
 from .constants import (
@@ -69,7 +70,10 @@ def telegram_webhook(request):
                 return JsonResponse({'status': 'invalid_command'})
 
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        return JsonResponse(
+            {'error': 'Invalid JSON'},
+            status=HTTPStatus.BAD_REQUEST
+        )
     except Exception as e:
         print(f'Error: {e}')
 
@@ -152,17 +156,23 @@ def confirm_booking(booking_id, chat_id):
 
         if str(chat_id) != master_chat_id and str(chat_id) != admin_chat_id:
             send_telegram_message(chat_id, UNAUTHORIZED_MESSAGE)
-            return JsonResponse({'error': 'Unauthorized'}, status=403)
+            return JsonResponse(
+                {'error': 'Unauthorized'},
+                status=HTTPStatus.FORBIDDEN
+            )
 
-        # Обновляем статус
+        old_status = booking.status
         booking.status = 'confirmed'
         booking.confirmed_at = timezone.now()
+
+        if old_status != 'confirmed':
+            from .reminder_utils import schedule_reminder_for_booking
+            schedule_reminder_for_booking(
+                booking,
+                save_changes=False,
+            )
         booking.save()
-
-        # Уведомляем клиента
         send_client_notification(booking, 'confirmed')
-
-        # Уведомляем мастера
         send_telegram_message(
             chat_id,
             f'✅ Запись подтверждена!\nДата: {booking.booking_date} в '
@@ -174,7 +184,10 @@ def confirm_booking(booking_id, chat_id):
 
     except Booking.DoesNotExist:
         send_telegram_message(chat_id, BOOKING_NOT_FOUND_MESSAGE)
-        return JsonResponse({'error': 'Booking not found'}, status=404)
+        return JsonResponse(
+            {'error': 'Booking not found'},
+            status=HTTPStatus.NOT_FOUND,
+        )
 
 
 def cancel_booking(booking_id, chat_id):
@@ -203,4 +216,7 @@ def cancel_booking(booking_id, chat_id):
 
     except Booking.DoesNotExist:
         send_telegram_message(chat_id, BOOKING_NOT_FOUND_MESSAGE)
-        return JsonResponse({'error': 'Booking not found'}, status=404)
+        return JsonResponse(
+            {'error': 'Booking not found'},
+            status=HTTPStatus.BAD_REQUEST,
+        )

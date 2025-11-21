@@ -26,7 +26,3 @@ class MasterAdmin(admin.ModelAdmin):
     ]
     list_editable = ['is_active', 'is_contact_phone']
     filter_horizontal = ['procedures']
-
-    # @admin.display(description='Телефон для справок', boolean=True)
-    # def is_contact_phode_display(self, obj):
-    #     return obj.is_contact_phone

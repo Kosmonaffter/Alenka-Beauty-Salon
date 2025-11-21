@@ -64,11 +64,33 @@
         {% block content %}
         {% endblock %}
     </main>
-
-    <!-- Футер -->
     <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container text-center">
-            <p>&copy; 2025 Наш салон красоты АлЁнкА. Все права защищены.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 text-center text-md-start">
+                    <h6>Контактная информация</h6>
+                    <div class="footer-contact">
+                        {% if contact_phone %}
+                            <p>📞 <a href="tel:{{ contact_phone }}">{{ contact_phone }}</a></p>
+                        {% endif %}
+                        {% if contact_email %}
+                            <p>📧 <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h6>Адрес</h6>
+                    <div class="footer-contact">
+                        {% if legal_address %}
+                            <p>📍 {{ legal_address }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <h6>Салон красоты АлЁнкА</h6>
+                    <p>&copy; 2025 Все права защищены.</p>
+                </div>
+            </div>
         </div>
     </footer>
 
