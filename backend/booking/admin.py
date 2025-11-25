@@ -9,12 +9,13 @@ class BookingAdmin(admin.ModelAdmin):
 
     list_display = [
         'booking_id',
+        'status',
+        'master',
+        'booking_time',
         'client_name',
         'procedure',
-        'master',
         'booking_date',
-        'booking_time',
-        'status'
+        
     ]
     list_filter = [
         'status',
